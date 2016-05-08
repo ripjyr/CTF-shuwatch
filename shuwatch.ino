@@ -12,15 +12,16 @@ int interruptPin = 2;
 
 // Shoot count
 volatile int count = 0;
+volatile bool shoot_flg = true;
 
 // Opening screen flag
 int switch_setup = false;
 
 unsigned long time_start = 0;
 int time_remain = 10;
-int flag_count = 20;
+int flag_count = 70;
 
-#define DEBUG // Debug Setting
+//#define DEBUG // Debug Setting
 //#define CLEAR_HIGHSCORE
 
 void setup() {
@@ -34,7 +35,6 @@ void setup() {
   pinMode(interruptPin, INPUT_PULLUP);
 
   attachInterrupt(digitalPinToInterrupt(interruptPin), increment, FALLING);
-  //attachInterrupt(digitalPinToInterrupt(interruptPin), increment, HIGH);
   readhighscore();
 
 #ifdef CLEAR_HIGHSCORE
@@ -46,15 +46,6 @@ void setup() {
 }
 
 void loop() {
-#ifdef DEBUG
-  Serial.print(F("switch_setup:"));
-  Serial.println(switch_setup);
-  Serial.print(F("time_remain:"));
-  Serial.println(time_remain);
-  Serial.print(F("count:"));
-  Serial.println(count);
-#endif
-
   if (time_remain > 0)  { //clear and setup
     if (switch_setup)  {
       lcd.setCursor(6, 0);
@@ -67,6 +58,7 @@ void loop() {
       lcd.print(time_remain);
     }
   } else {  // 10count done and flag show
+    shoot_flg = false;
     if (count >= flag_count ) {
 #ifdef DEBUG
       Serial.println(F("Flag print"));
@@ -79,21 +71,24 @@ void loop() {
     }
     check_highscore() ;
     switch_setup = false;
+    shoot_flg = true;
   }
 }
 void increment() {
+  if (shoot_flg == true) {
 #ifdef DEBUG
-  Serial.println(F("button pushed"));
+    Serial.println(F("button pushed"));
 #endif
-  if (time_remain < 1 || !switch_setup) {
-    before_start();
-    time_start = millis();
-  }
-  if (time_remain > 0 || switch_setup) {
-    count++;
+    if (time_remain < 1 || !switch_setup) {
+      before_start();
+      time_start = millis();
+    }
+    if (time_remain > 0 || switch_setup) {
+      count++;
 #ifdef DEBUG
-    Serial.println(count);
+      Serial.println(count);
 #endif
+    }
   }
 }
 
