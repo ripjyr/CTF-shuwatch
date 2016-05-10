@@ -64,7 +64,7 @@ void loop() {
       Serial.println(F("Flag print"));
 #endif
       lcd.setCursor(0, 1);
-      lcd.print("flag : flag_10s ");
+      lcd.print("flag : XXXXXXXX ");
       delay(5000);
       lcd.setCursor(0, 1);
       lcd.print(" PUSH TO START  ");
